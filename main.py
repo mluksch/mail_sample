@@ -13,8 +13,6 @@ SENDER = os.getenv("SENDER")
 
 
 def send_simple_message(subject, text):
-    print(f"https://api.mailgun.net/v3/{MAIL_GUN_SENDER_DOMAIN}/messages")
-    print(f"mailgun@{MAIL_GUN_SENDER_DOMAIN}")
     return requests.post(
         f"https://api.mailgun.net/v3/{MAIL_GUN_SENDER_DOMAIN}/messages",
         auth=("api", MAIL_GUN_API_KEY),

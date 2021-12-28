@@ -1,33 +1,32 @@
 import os
 import random
-import smtplib
-from email.mime.text import MIMEText
 
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
-USER = os.getenv("USER")
-PASS = os.getenv("PASS")
-receiver = os.getenv("RECEIVER")
-sender = os.getenv("SENDER")
+MAIL_GUN_API_KEY = os.getenv("MAIL_GUN_API_KEY")
+MAILGUN_ENDPOINT = os.getenv("MAILGUN_ENDPOINT")
+MAIL_GUN_SENDER_DOMAIN = os.getenv("SENDER_DOMAIN")
+RECEIVER = os.getenv("RECEIVER")
+SENDER = os.getenv("SENDER")
 
-with smtplib.SMTP(port=587, host="smtp.mail.yahoo.com") as server_con, open("quotes.txt") as f:
+
+def send_simple_message(subject, text):
+    print(f"https://api.mailgun.net/v3/{MAIL_GUN_SENDER_DOMAIN}/messages")
+    print(f"mailgun@{MAIL_GUN_SENDER_DOMAIN}")
+    return requests.post(
+        f"https://api.mailgun.net/v3/{MAIL_GUN_SENDER_DOMAIN}/messages",
+        auth=("api", MAIL_GUN_API_KEY),
+        data={"from": SENDER,
+              "to": [RECEIVER],
+              "subject": subject,
+              "text": text})
+
+
+with open("quotes.txt") as f:
     # Randomly choose a motivational quote:
     quotes = f.readlines()
     mail_content = random.choice(quotes)
 
-    # Create a (Mime-Text-Protocol conform) Mail-Message
-    msg = MIMEText(mail_content, "plain", "utf-8")
-    msg["Subject"] = "Motivation for new day"
-    msg["From"] = sender
-    msg["To"] = receiver
-
-    # Encrypt mail
-    server_con.starttls()
-
-    # Login to Mail-Server
-    server_con.login(user=USER, password=PASS)
-
-    # Send mail
-    server_con.sendmail(sender, receiver,
-                        msg.as_string())
+    send_simple_message(subject="Motivation for new day", text=mail_content)
